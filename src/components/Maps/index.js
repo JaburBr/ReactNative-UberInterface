@@ -1,8 +1,11 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import { View } from 'react-native';
-import MapView from 'react-native-maps';
+import MapView, { Marker } from 'react-native-maps';
 import Search from '../Search';
 import Directions from '../Directions';
+import { getPixelSize } from '../../utils';
+import markerImage from '../../assets/marker.png';
+import { LocationBox, LocationText, LocationTimeBox, LocationTimeText, LocationTimeTextSmall } from './styles';
 
 class Maps extends Component {
     constructor(props) {
@@ -61,22 +64,49 @@ class Maps extends Component {
                     ref={el => this.mapView = el}
                 >
                     {destination && (
-                        <Directions
-                            origin={region}
-                            destination={destination}
-                            onReady={result => {
-                                this.mapView.fitToCoordinates(result.coordinates, {
-                                    edgePadding:{
-                                        right: 50,
-                                        left: 50,
-                                        top: 50,
-                                        bottom: 50
-                                    }
-                                })
-                            }}
-                        />
-                    )
-                    }
+                        <Fragment>
+                            <Directions
+                                origin={region}
+                                destination={destination}
+                                onReady={result => {
+                                    this.mapView.fitToCoordinates(result.coordinates, {
+                                        edgePadding: {
+                                            right: getPixelSize(50),
+                                            left: getPixelSize(50),
+                                            top: getPixelSize(50),
+                                            bottom: getPixelSize(50),
+                                        }
+                                    })
+                                }}
+                            />
+
+                            <Marker
+                                coordinate={destination}
+                                anchor={{ x: 0, y: 0 }}
+                                image={markerImage}
+                            >
+                                <LocationBox>
+                                    <LocationText>
+                                        {destination.title}
+                                    </LocationText>
+                                </LocationBox>
+                            </Marker>
+
+                            <Marker
+                                coordinate={region}
+                                anchor={{ x: 0, y: 0 }}
+                            >
+                                <LocationBox>
+                                    <LocationTimeBox>
+                                        <LocationTimeText>31</LocationTimeText>
+                                        <LocationTimeTextSmall>MIN</LocationTimeTextSmall>
+                                    </LocationTimeBox>
+                                    <LocationText>Avenida</LocationText>
+                                </LocationBox>
+                            </Marker>
+
+                        </Fragment>
+                    )}
                 </MapView>
                 < Search onLocationSelected={this.handleLocationSelected} />
             </View>
